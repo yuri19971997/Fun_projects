@@ -16,6 +16,13 @@ PLAYER_HIT = [
     "*****",
 ]
 
+# Player ship with shield active (cyan bubble)
+PLAYER_SHIELD = [
+    " (^) ",
+    "(/ \\)",
+    "(___)",
+]
+
 # Regular chicken (5 wide x 2 tall)
 CHICKEN = [
     " \\o/ ",

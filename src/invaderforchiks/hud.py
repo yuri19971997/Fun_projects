@@ -28,14 +28,20 @@ def render_top_bar(screen, score, lives, wave):
     screen.print_at("-" * width, 0, 1, colour=240)
 
 
-def render_bottom_bar(screen, weapon_name, combo, combo_timer):
-    """Bottom bar: weapon (left), combo (right)."""
+def render_bottom_bar(screen, weapon_name, combo, combo_timer, shield_active=False):
+    """Bottom bar: weapon (left), shield indicator, combo (right)."""
     y = screen.height - 1
     width = screen.width
 
     # Weapon info on left
     weapon_text = f" {weapon_name} "
     screen.print_at(weapon_text, 0, y, colour=config.COLOR_POWERUP, attr=Screen.A_BOLD)
+
+    # Shield indicator in center-left
+    if shield_active:
+        shield_text = " [SHIELD ACTIVE] "
+        sx = len(weapon_text) + 1
+        screen.print_at(shield_text, sx, y, colour=config.COLOR_POWERUP_SHIELD, attr=Screen.A_BOLD)
 
     # Combo on right (only show if active)
     if combo > 1:

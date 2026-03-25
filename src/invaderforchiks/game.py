@@ -78,16 +78,15 @@ class GameScene(Effect):
             return None
         elif not self._paused:
             if key in (Screen.KEY_LEFT, ord("a"), ord("A")):
-                self.player.set_direction(-1)
+                self.player.press_direction(-1)
                 return None
             elif key in (Screen.KEY_RIGHT, ord("d"), ord("D")):
-                self.player.set_direction(1)
+                self.player.press_direction(1)
                 return None
             elif key in (Screen.KEY_DOWN, ord("s"), ord("S")):
-                self.player.set_direction(0)
+                self.player.stop()
                 return None
             elif key == ord(" "):
-                # Direct fire: each SPACE press = one shot attempt
                 new_bullets = self.player.try_shoot()
                 for b in new_bullets:
                     self.bullets.append(Bullet(b["x"], b["y"], b["dx"], b["dy"], b["char"]))
@@ -216,7 +215,7 @@ class GameScene(Effect):
         elif ptype == "extra_life":
             self.player.lives += 1
         elif ptype == "shield":
-            self.player.invincible_timer = 60  # 3 seconds
+            self.player.shield_timer = 100  # ~5 seconds, absorbs one hit
         elif ptype == "missile":
             # Kill random 3 chickens
             alive = self.formation.alive_chickens
@@ -241,7 +240,7 @@ class GameScene(Effect):
         # HUD
         weapon_name = config.WEAPON_NAMES[self.player.weapon_level]
         hud.render_top_bar(self._screen, self.score, self.player.lives, self.wave)
-        hud.render_bottom_bar(self._screen, weapon_name, self.combo, self.combo_timer)
+        hud.render_bottom_bar(self._screen, weapon_name, self.combo, self.combo_timer, self.player.is_shielded)
 
         # Wave banner
         if self._wave_banner_timer > 0:

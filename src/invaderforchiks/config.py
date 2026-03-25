@@ -17,8 +17,8 @@ CHICKEN_ROWS = 3
 CHICKEN_COLS = 8
 CHICKEN_H_SPEED = 1  # horizontal movement per step
 CHICKEN_V_STEP = 1   # how far down when hitting wall
-CHICKEN_MOVE_INTERVAL = 8  # frames between moves (lower = faster)
-CHICKEN_SHOOT_CHANCE = 0.003  # probability per chicken per frame (~1 egg/sec total)
+CHICKEN_MOVE_INTERVAL = 4  # frames between moves (was 8, now 2x faster)
+CHICKEN_SHOOT_CHANCE = 0.008  # probability per chicken per frame (was 0.003, ~4 eggs/sec)
 EGG_SPEED = 1
 
 # Scoring

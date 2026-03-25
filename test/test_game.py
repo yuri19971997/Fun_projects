@@ -39,32 +39,52 @@ class TestPlayer:
     def test_move_left_bounded(self):
         p = Player(80, 24)
         p.x = 0
-        p.set_direction(-1)
+        p.press_direction(-1)
         p.tick()
         assert p.x == 0
 
     def test_move_right_bounded(self):
         p = Player(80, 24)
         p.x = 80 - p.width
-        p.set_direction(1)
+        p.press_direction(1)
         p.tick()
         assert p.x == 80 - p.width
 
     def test_velocity_movement(self):
         p = Player(80, 24)
         start_x = p.x
-        p.set_direction(1)
+        p.press_direction(1)
         p.tick()
         assert p.x == start_x + config.PLAYER_SPEED
 
-    def test_velocity_stops(self):
+    def test_movement_auto_stops(self):
+        """Ship stops after decay frames with no key input."""
         p = Player(80, 24)
-        p.set_direction(1)
+        p.press_direction(1)
+        # Tick through decay period
+        for _ in range(10):
+            p.tick()
+        pos = p.x
+        p.tick()
+        assert p.x == pos  # stopped
+
+    def test_stop_immediate(self):
+        p = Player(80, 24)
+        p.press_direction(1)
         p.tick()
         moved_x = p.x
-        p.set_direction(0)
+        p.stop()
         p.tick()
         assert p.x == moved_x  # didn't move further
+
+    def test_shield_absorbs_hit(self):
+        p = Player(80, 24)
+        p.shield_timer = 50
+        initial_lives = p.lives
+        dead = p.hit()
+        assert dead is False
+        assert p.lives == initial_lives  # no life lost
+        assert p.shield_timer == 0  # shield broke
 
     def test_shoot_creates_bullet(self):
         p = Player(80, 24)
