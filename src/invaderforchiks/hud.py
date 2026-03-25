@@ -28,14 +28,13 @@ def render_top_bar(screen, score, lives, wave):
     screen.print_at("-" * width, 0, 1, colour=240)
 
 
-def render_bottom_bar(screen, weapon_name, combo, combo_timer, auto_fire=False):
-    """Bottom bar: weapon (left), auto-fire indicator, combo (right)."""
+def render_bottom_bar(screen, weapon_name, combo, combo_timer):
+    """Bottom bar: weapon (left), combo (right)."""
     y = screen.height - 1
     width = screen.width
 
     # Weapon info on left
-    fire_indicator = " [FIRE]" if auto_fire else ""
-    weapon_text = f" {weapon_name}{fire_indicator} "
+    weapon_text = f" {weapon_name} "
     screen.print_at(weapon_text, 0, y, colour=config.COLOR_POWERUP, attr=Screen.A_BOLD)
 
     # Combo on right (only show if active)

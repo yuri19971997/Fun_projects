@@ -56,11 +56,11 @@ BULLET_HEIGHT = 1
 SPREAD_BULLET_L = "/"
 SPREAD_BULLET_R = "\\"
 
-# Power-up icons (3 wide x 1 tall)
-POWERUP_WEAPON = "[W]"
-POWERUP_LIFE = "[+]"
-POWERUP_SHIELD = "[S]"
-POWERUP_MISSILE = "[M]"
+# Power-up icons -- wide labels with clear meaning
+POWERUP_WEAPON = "<GUN UP>"
+POWERUP_LIFE = "< +1 HP>"
+POWERUP_SHIELD = "<SHIELD>"
+POWERUP_MISSILE = "< BOOM >"
 
 # Explosion frames (5 wide x 3 tall) -- animate through these
 EXPLOSION_FRAMES = [

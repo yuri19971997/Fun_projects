@@ -6,11 +6,11 @@ MIN_HEIGHT = 24
 FPS = 20  # asciimatics default is ~20fps
 
 # Player
-PLAYER_SPEED = 3          # cells per frame when moving (was 2)
+PLAYER_SPEED = 1          # cells per frame when moving (smooth and aimable)
 PLAYER_START_LIVES = 3
 EXTRA_LIFE_SCORE = 5000   # bonus life every N points
 BULLET_SPEED = 2
-BULLET_COOLDOWN = 2       # frames between shots (was 3, faster fire rate)
+BULLET_COOLDOWN = 2       # frames between shots
 
 # Enemies
 CHICKEN_ROWS = 3
@@ -48,7 +48,11 @@ COLOR_EGG = 231         # white
 COLOR_HUD = 255         # bright white
 COLOR_SCORE = 226       # yellow
 COLOR_COMBO = 196       # red
-COLOR_POWERUP = 51      # cyan
+COLOR_POWERUP = 51      # cyan (fallback)
+COLOR_POWERUP_WEAPON = 214  # orange -- weapon upgrade
+COLOR_POWERUP_LIFE = 46     # green -- extra life
+COLOR_POWERUP_SHIELD = 51   # cyan -- shield
+COLOR_POWERUP_MISSILE = 196 # red -- missile strike
 COLOR_BOSS = 196        # bright red
 COLOR_EXPLOSION = 208   # orange
 COLOR_TITLE = 226       # yellow

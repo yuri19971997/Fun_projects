@@ -81,7 +81,6 @@ class PowerUp:
         self.y = y
         self.ptype = ptype
         self.alive = True
-        self.width = 3
         self.height = 1
 
     @property
@@ -96,6 +95,22 @@ class PowerUp:
             return sprites.POWERUP_MISSILE
         return "[?]"
 
+    @property
+    def width(self):
+        return len(self.char)
+
+    @property
+    def color(self):
+        if self.ptype == "weapon_up":
+            return config.COLOR_POWERUP_WEAPON
+        elif self.ptype == "extra_life":
+            return config.COLOR_POWERUP_LIFE
+        elif self.ptype == "shield":
+            return config.COLOR_POWERUP_SHIELD
+        elif self.ptype == "missile":
+            return config.COLOR_POWERUP_MISSILE
+        return config.COLOR_POWERUP
+
     def tick(self, screen_height):
         self.y += config.POWERUP_FALL_SPEED
         if self.y >= screen_height:
@@ -103,4 +118,5 @@ class PowerUp:
 
     def render(self, screen):
         if self.alive:
-            screen.print_at(self.char, self.x, self.y, colour=config.COLOR_POWERUP)
+            from asciimatics.screen import Screen
+            screen.print_at(self.char, self.x, self.y, colour=self.color, attr=Screen.A_BOLD)

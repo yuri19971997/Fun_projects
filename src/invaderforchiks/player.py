@@ -4,6 +4,9 @@ from asciimatics.screen import Screen
 
 from . import config, sprites
 
+# Frames to keep firing after last SPACE press (simulates "hold to fire")
+FIRE_DECAY_FRAMES = 4
+
 
 class Player:
     def __init__(self, screen_width, screen_height):
@@ -18,20 +21,20 @@ class Player:
         self.screen_width = screen_width
         # Velocity-based movement: ship keeps moving until stopped
         self.vx = 0
-        # Auto-fire: ship keeps shooting when enabled
-        self.auto_fire = False
+        # Firing: decays after last SPACE press
+        self.fire_timer = 0
+
+    @property
+    def is_firing(self):
+        return self.fire_timer > 0
 
     def set_direction(self, direction):
         """Set movement direction: -1=left, 0=stop, 1=right."""
         self.vx = direction * config.PLAYER_SPEED
 
-    def start_firing(self):
-        """Enable auto-fire."""
-        self.auto_fire = True
-
-    def stop_firing(self):
-        """Disable auto-fire."""
-        self.auto_fire = False
+    def press_fire(self):
+        """Called each time SPACE is pressed -- refreshes the fire window."""
+        self.fire_timer = FIRE_DECAY_FRAMES
 
     def try_shoot(self):
         """Returns list of new bullet positions if cooldown allows, else empty."""
@@ -70,11 +73,13 @@ class Player:
             self.weapon_level += 1
 
     def tick(self):
-        """Per-frame update -- applies velocity and auto-fire."""
+        """Per-frame update -- applies velocity and fire decay."""
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
         if self.invincible_timer > 0:
             self.invincible_timer -= 1
+        if self.fire_timer > 0:
+            self.fire_timer -= 1
         # Apply velocity
         if self.vx != 0:
             self.x = max(0, min(self.screen_width - self.width, self.x + self.vx))
