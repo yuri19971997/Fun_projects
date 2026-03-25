@@ -29,3 +29,9 @@ Saves hours for the next agent.
 - Cause: Key events are buffered; the SPACE that started the game was also consumed by the game scene
 - Fix: Drain input buffer with `while self._screen.get_event() is not None: pass` in _init_game()
 - Commit: 6d29591
+
+### CRITICAL: asciimatics default handler steals SPACE and Q keys
+- Symptom: Arrow keys, A/D, and SPACE do nothing in-game. SPACE sends player back to title menu.
+- Cause: screen.play() calls get_event() and passes events to scene.process_event() THEN to _unhandled_event_default(). Our effects didn't implement process_event(), so ALL keys were "unhandled". The default handler maps SPACE->NextScene (back to title!) and Q->StopApplication.
+- Fix: Implement process_event() on both GameScene and TitleScreen to consume keyboard events (return None). Set safe_to_default_unhandled_input=False. Move ALL input handling from _update() to process_event(). Never call get_event() manually inside _update().
+- Commit: 4591bf3
