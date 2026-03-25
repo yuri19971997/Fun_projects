@@ -13,12 +13,12 @@ BULLET_SPEED = 2
 BULLET_COOLDOWN = 3  # frames between shots
 
 # Enemies
-CHICKEN_ROWS = 4
+CHICKEN_ROWS = 3
 CHICKEN_COLS = 8
 CHICKEN_H_SPEED = 1  # horizontal movement per step
 CHICKEN_V_STEP = 1   # how far down when hitting wall
-CHICKEN_MOVE_INTERVAL = 6  # frames between moves (lower = faster)
-CHICKEN_SHOOT_CHANCE = 0.02  # probability per chicken per frame
+CHICKEN_MOVE_INTERVAL = 8  # frames between moves (lower = faster)
+CHICKEN_SHOOT_CHANCE = 0.003  # probability per chicken per frame (~1 egg/sec total)
 EGG_SPEED = 1
 
 # Scoring

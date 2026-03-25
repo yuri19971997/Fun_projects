@@ -38,10 +38,14 @@ class GameScene(Effect):
         self.combo_timer = 0
         self.formation = Formation(self.wave, w, y_offset=3)
         self._game_over = False
-        self._wave_banner_timer = 40  # show wave banner for N frames
+        self._wave_banner_timer = 60  # grace period: no enemy fire during banner
+        # Drain any buffered input so stale keypresses don't affect the new game
+        while self._screen.get_event() is not None:
+            pass
 
     def reset(self):
-        pass
+        """Called on scene transition -- reinitialize the game."""
+        self._init_game()
 
     @property
     def stop_frame(self):
@@ -105,10 +109,11 @@ class GameScene(Effect):
             ex.tick()
         self.explosions = [ex for ex in self.explosions if ex.alive]
 
-        # Formation movement + egg spawning
-        new_eggs = self.formation.tick(frame_no)
-        for e in new_eggs:
-            self.eggs.append(Egg(e["x"], e["y"], e["dy"]))
+        # Formation movement + egg spawning (no eggs during grace period)
+        if self._wave_banner_timer <= 0:
+            new_eggs = self.formation.tick(frame_no)
+            for e in new_eggs:
+                self.eggs.append(Egg(e["x"], e["y"], e["dy"]))
 
         # Combo decay
         if self.combo_timer > 0:
@@ -126,8 +131,7 @@ class GameScene(Effect):
             return
         self.wave += 1
         self.formation = Formation(self.wave, self._screen.width, y_offset=3)
-        self._wave_banner_timer = 40
-        # Clear remaining projectiles
+        self._wave_banner_timer = 60  # grace period
         self.eggs.clear()
 
     def _check_collisions(self):
