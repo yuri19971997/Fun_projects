@@ -6,11 +6,11 @@ MIN_HEIGHT = 24
 FPS = 20  # asciimatics default is ~20fps
 
 # Player
-PLAYER_SPEED = 2
+PLAYER_SPEED = 3          # cells per frame when moving (was 2)
 PLAYER_START_LIVES = 3
-EXTRA_LIFE_SCORE = 5000  # bonus life every N points
+EXTRA_LIFE_SCORE = 5000   # bonus life every N points
 BULLET_SPEED = 2
-BULLET_COOLDOWN = 3  # frames between shots
+BULLET_COOLDOWN = 2       # frames between shots (was 3, faster fire rate)
 
 # Enemies
 CHICKEN_ROWS = 3

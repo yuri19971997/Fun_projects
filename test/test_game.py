@@ -39,14 +39,32 @@ class TestPlayer:
     def test_move_left_bounded(self):
         p = Player(80, 24)
         p.x = 0
-        p.move_left()
+        p.set_direction(-1)
+        p.tick()
         assert p.x == 0
 
     def test_move_right_bounded(self):
         p = Player(80, 24)
         p.x = 80 - p.width
-        p.move_right()
+        p.set_direction(1)
+        p.tick()
         assert p.x == 80 - p.width
+
+    def test_velocity_movement(self):
+        p = Player(80, 24)
+        start_x = p.x
+        p.set_direction(1)
+        p.tick()
+        assert p.x == start_x + config.PLAYER_SPEED
+
+    def test_velocity_stops(self):
+        p = Player(80, 24)
+        p.set_direction(1)
+        p.tick()
+        moved_x = p.x
+        p.set_direction(0)
+        p.tick()
+        assert p.x == moved_x  # didn't move further
 
     def test_shoot_creates_bullet(self):
         p = Player(80, 24)

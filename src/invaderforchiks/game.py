@@ -78,15 +78,20 @@ class GameScene(Effect):
             return None
         elif not self._paused:
             if key in (Screen.KEY_LEFT, ord("a"), ord("A")):
-                self.player.move_left()
+                self.player.set_direction(-1)
+                self.player.start_firing()
                 return None
             elif key in (Screen.KEY_RIGHT, ord("d"), ord("D")):
-                self.player.move_right()
+                self.player.set_direction(1)
+                self.player.start_firing()
+                return None
+            elif key in (Screen.KEY_DOWN, ord("s"), ord("S")):
+                # Stop moving
+                self.player.set_direction(0)
                 return None
             elif key == ord(" "):
-                new_bullets = self.player.try_shoot()
-                for b in new_bullets:
-                    self.bullets.append(Bullet(b["x"], b["y"], b["dx"], b["dy"], b["char"]))
+                # Toggle auto-fire, and also fire immediately
+                self.player.auto_fire = not self.player.auto_fire
                 return None
 
         return None  # consume all keys during gameplay
@@ -96,6 +101,12 @@ class GameScene(Effect):
             return
 
         self.player.tick()
+
+        # Auto-fire: shoot every frame when enabled
+        if self.player.auto_fire:
+            new_bullets = self.player.try_shoot()
+            for b in new_bullets:
+                self.bullets.append(Bullet(b["x"], b["y"], b["dx"], b["dy"], b["char"]))
 
         # Wave banner countdown
         if self._wave_banner_timer > 0:
@@ -237,7 +248,7 @@ class GameScene(Effect):
         # HUD
         weapon_name = config.WEAPON_NAMES[self.player.weapon_level]
         hud.render_top_bar(self._screen, self.score, self.player.lives, self.wave)
-        hud.render_bottom_bar(self._screen, weapon_name, self.combo, self.combo_timer)
+        hud.render_bottom_bar(self._screen, weapon_name, self.combo, self.combo_timer, self.player.auto_fire)
 
         # Wave banner
         if self._wave_banner_timer > 0:

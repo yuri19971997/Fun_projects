@@ -16,12 +16,22 @@ class Player:
         self.shoot_cooldown = 0
         self.invincible_timer = 0  # frames of invincibility after hit
         self.screen_width = screen_width
+        # Velocity-based movement: ship keeps moving until stopped
+        self.vx = 0
+        # Auto-fire: ship keeps shooting when enabled
+        self.auto_fire = False
 
-    def move_left(self):
-        self.x = max(0, self.x - config.PLAYER_SPEED)
+    def set_direction(self, direction):
+        """Set movement direction: -1=left, 0=stop, 1=right."""
+        self.vx = direction * config.PLAYER_SPEED
 
-    def move_right(self):
-        self.x = min(self.screen_width - self.width, self.x + config.PLAYER_SPEED)
+    def start_firing(self):
+        """Enable auto-fire."""
+        self.auto_fire = True
+
+    def stop_firing(self):
+        """Disable auto-fire."""
+        self.auto_fire = False
 
     def try_shoot(self):
         """Returns list of new bullet positions if cooldown allows, else empty."""
@@ -33,16 +43,13 @@ class Player:
         top_y = self.y - 1
 
         if self.weapon_level == 0:
-            # Pea shooter: single bullet
             return [{"x": center_x, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET}]
         elif self.weapon_level == 1:
-            # Dual shot
             return [
                 {"x": center_x - 1, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET},
                 {"x": center_x + 1, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET},
             ]
         elif self.weapon_level >= 2:
-            # Spread shot
             return [
                 {"x": center_x - 1, "y": top_y, "dx": -1, "dy": -config.BULLET_SPEED, "char": sprites.SPREAD_BULLET_L},
                 {"x": center_x, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET},
@@ -63,14 +70,16 @@ class Player:
             self.weapon_level += 1
 
     def tick(self):
-        """Per-frame update."""
+        """Per-frame update -- applies velocity and auto-fire."""
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
         if self.invincible_timer > 0:
             self.invincible_timer -= 1
+        # Apply velocity
+        if self.vx != 0:
+            self.x = max(0, min(self.screen_width - self.width, self.x + self.vx))
 
     def render(self, screen, frame_no):
-        # Blink when invincible
         if self.invincible_timer > 0 and frame_no % 4 < 2:
             sprite = sprites.PLAYER_HIT
         else:
