@@ -1,0 +1,28 @@
+# Build artifacts
+build/
+dist/
+*.o
+*.so
+*.egg-info/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# UV
+uv.lock
+
+# Game data
+agent-fetched/

@@ -1,0 +1,28 @@
+[project]
+name = "invaderforchiks"
+version = "0.1.0"
+description = "A terminal shoot-em-up where you defend Earth from waves of invading space chickens"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = [
+    "asciimatics>=1.15.0",
+]
+
+[project.scripts]
+invaderforchiks = "invaderforchiks.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/invaderforchiks"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]

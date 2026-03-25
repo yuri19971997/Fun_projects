@@ -1,0 +1,30 @@
+#!/bin/bash
+# Pre-commit hook: build must succeed with zero warnings.
+# Install: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+# Detect build system and run appropriate check
+if [ -f Makefile ]; then
+    make -j$(nproc) 2>&1 | grep -q "warning:" && {
+        echo "ERROR: build has warnings. Fix before committing."
+        exit 1
+    }
+elif [ -f CMakeLists.txt ] && [ -d build ]; then
+    cd build && make -j$(nproc) 2>&1 | grep -q "warning:" && {
+        echo "ERROR: build has warnings. Fix before committing."
+        exit 1
+    }
+elif [ -f package.json ]; then
+    npm run build 2>&1 | grep -qi "error" && {
+        echo "ERROR: build failed. Fix before committing."
+        exit 1
+    }
+elif [ -f Cargo.toml ]; then
+    cargo build 2>&1 | grep -q "warning" && {
+        echo "ERROR: build has warnings. Fix before committing."
+        exit 1
+    }
+fi
+
+exit 0
