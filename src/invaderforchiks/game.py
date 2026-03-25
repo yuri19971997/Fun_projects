@@ -16,6 +16,9 @@ from .projectiles import Bullet, Egg, Explosion, PowerUp
 class GameScene(Effect):
     """Main gameplay effect -- handles the full game loop."""
 
+    # Prevent asciimatics default handler from stealing our keys
+    safe_to_default_unhandled_input = False
+
     def __init__(self, screen):
         super().__init__(screen)
         self._game_over = False
@@ -39,9 +42,6 @@ class GameScene(Effect):
         self.formation = Formation(self.wave, w, y_offset=3)
         self._game_over = False
         self._wave_banner_timer = 60  # grace period: no enemy fire during banner
-        # Drain any buffered input so stale keypresses don't affect the new game
-        while self._screen.get_event() is not None:
-            pass
 
     def reset(self):
         """Called on scene transition -- reinitialize the game."""
@@ -51,33 +51,45 @@ class GameScene(Effect):
     def stop_frame(self):
         return 0  # 0 = run forever in asciimatics
 
-    def _handle_input(self):
-        event = self._screen.get_event()
+    @property
+    def frame_update_count(self):
+        # Force screen refresh every frame for smooth animation
+        return 1
+
+    def process_event(self, event):
+        """Handle keyboard input. Return None to consume, event to pass through."""
         if not isinstance(event, KeyboardEvent):
-            return
+            return event
 
         key = event.key_code
 
         if self._game_over:
             if key == ord(" "):
                 self._init_game()
+                return None
             elif key in (ord("q"), ord("Q")):
                 raise StopApplication("Player quit")
-            return
+            return None  # consume all keys on game over screen
 
         if key in (ord("q"), ord("Q")):
             raise StopApplication("Player quit")
         elif key in (ord("p"), ord("P")):
             self._paused = not self._paused
+            return None
         elif not self._paused:
-            if key == Screen.KEY_LEFT:
+            if key in (Screen.KEY_LEFT, ord("a"), ord("A")):
                 self.player.move_left()
-            elif key == Screen.KEY_RIGHT:
+                return None
+            elif key in (Screen.KEY_RIGHT, ord("d"), ord("D")):
                 self.player.move_right()
+                return None
             elif key == ord(" "):
                 new_bullets = self.player.try_shoot()
                 for b in new_bullets:
                     self.bullets.append(Bullet(b["x"], b["y"], b["dx"], b["dy"], b["char"]))
+                return None
+
+        return None  # consume all keys during gameplay
 
     def _update_state(self, frame_no):
         if self._paused or self._game_over:
@@ -253,7 +265,6 @@ class GameScene(Effect):
         self._screen.refresh()
 
     def _update(self, frame_no):
-        self._handle_input()
         self._update_state(frame_no)
         self._check_collisions()
         self._render(frame_no)

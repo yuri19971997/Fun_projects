@@ -26,7 +26,7 @@ def game_loop(screen):
         Scene([GameScene(screen)], -1, name="game"),
     ]
 
-    screen.play(scenes, stop_on_resize=True, repeat=True, allow_int=True)
+    screen.play(scenes, stop_on_resize=True, repeat=True)
 
 
 def main():
