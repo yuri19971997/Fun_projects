@@ -6,6 +6,7 @@ from asciimatics.exceptions import NextScene, StopApplication
 from asciimatics.screen import Screen
 
 from . import config, sprites
+from .starfield import Starfield
 
 
 class TitleScreen(Effect):
@@ -17,9 +18,11 @@ class TitleScreen(Effect):
     def __init__(self, screen):
         super().__init__(screen)
         self._selected = 0
+        self.starfield = Starfield(screen.width, screen.height)
 
     def reset(self):
         self._selected = 0
+        self.starfield = Starfield(self._screen.width, self._screen.height)
 
     @property
     def stop_frame(self):
@@ -55,6 +58,9 @@ class TitleScreen(Effect):
         self._screen.clear_buffer(7, 0, 0)
         w = self._screen.width
         h = self._screen.height
+
+        # Space background
+        self.starfield.render(self._screen, frame_no)
 
         # Title art
         title_y = h // 4 - len(sprites.TITLE_ART) // 2

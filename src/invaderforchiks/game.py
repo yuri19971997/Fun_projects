@@ -11,6 +11,7 @@ from . import config, hud, sprites
 from .enemies import Formation
 from .player import Player
 from .projectiles import Bullet, Egg, Explosion, PowerUp
+from .starfield import Starfield
 
 
 class GameScene(Effect):
@@ -42,6 +43,7 @@ class GameScene(Effect):
         self.formation = Formation(self.wave, w, y_offset=3)
         self._game_over = False
         self._wave_banner_timer = 60  # grace period: no enemy fire during banner
+        self.starfield = Starfield(w, h, y_min=2, y_max=h - 2)
 
     def reset(self):
         """Called on scene transition -- reinitialize the game."""
@@ -231,6 +233,9 @@ class GameScene(Effect):
 
     def _render(self, frame_no):
         self._screen.clear_buffer(7, 0, 0)
+
+        # Space background
+        self.starfield.render(self._screen, frame_no)
 
         if self._game_over:
             hud.render_game_over(self._screen, self.score)
