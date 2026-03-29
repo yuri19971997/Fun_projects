@@ -8,9 +8,9 @@ from . import config, sprites
 # INITIAL: after a NEW direction press, covers terminal key-repeat
 #          initial delay (~250-500ms).  8 frames = 400ms.
 # REPEAT:  after a SAME-direction repeat, short window so releasing
-#          the key stops the ship quickly.  3 frames = 150ms.
+#          the key stops the ship quickly.  2 frames = 100ms.
 INPUT_WINDOW_INITIAL = 8
-INPUT_WINDOW_REPEAT = 3
+INPUT_WINDOW_REPEAT = 2
 
 
 class Player:

@@ -7,7 +7,7 @@ FPS = 20  # asciimatics default is ~20fps
 
 # Player
 PLAYER_SPEED = 2          # max cells per frame (40 cells/sec at 20fps)
-PLAYER_ACCEL = 1          # cells/frame/frame -- gentle ramp-up/down for smoothness
+PLAYER_ACCEL = 2          # = SPEED: instant start/stop, no ramp delay
 PLAYER_START_LIVES = 3
 EXTRA_LIFE_SCORE = 5000   # bonus life every N points
 BULLET_SPEED = 2
