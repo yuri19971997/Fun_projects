@@ -6,8 +6,8 @@ MIN_HEIGHT = 24
 FPS = 20  # asciimatics default is ~20fps
 
 # Player
-PLAYER_SPEED = 2          # max cells per frame (top speed)
-PLAYER_ACCEL = 1          # cells/frame/frame -- smooth ramp-up and ramp-down
+PLAYER_SPEED = 3          # max cells per frame (top speed)
+PLAYER_ACCEL = 3          # cells/frame/frame -- instant response, no ramp lag
 PLAYER_START_LIVES = 3
 EXTRA_LIFE_SCORE = 5000   # bonus life every N points
 BULLET_SPEED = 2
