@@ -83,8 +83,8 @@ class TestPlayer:
         """Ship stops after decay frames with no key input."""
         p = Player(80, 24)
         p.press_direction(1)
-        # Tick through decay period
-        for _ in range(10):
+        # Tick well past the initial input window + decel
+        for _ in range(20):
             p.tick()
         pos = p.x
         p.tick()

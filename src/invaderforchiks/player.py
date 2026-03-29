@@ -4,10 +4,13 @@ from asciimatics.screen import Screen
 
 from . import config, sprites
 
-# Frames to maintain target direction after last keypress.
-# Covers the gap between releasing one key and terminal key-repeat starting
-# for the new key (~250-500ms).  8 frames @ 20fps = 400ms.
-INPUT_WINDOW = 8
+# Two-tier input window (frames @ 20fps):
+# INITIAL: after a NEW direction press, generous window to cover terminal
+#          key-repeat initial delay (~250-500ms).  12 frames = 600ms.
+# REPEAT:  after a SAME-direction repeat, short window so releasing the
+#          key stops the ship quickly.  3 frames = 150ms.
+INPUT_WINDOW_INITIAL = 12
+INPUT_WINDOW_REPEAT = 3
 
 
 class Player:
@@ -33,8 +36,14 @@ class Player:
 
     def press_direction(self, direction):
         """Called on each direction keypress. Sets target velocity."""
-        self.target_vx = direction * config.PLAYER_SPEED
-        self.input_timer = INPUT_WINDOW
+        new_target = direction * config.PLAYER_SPEED
+        if new_target != self.target_vx:
+            # New direction (or starting from stopped): long window
+            self.input_timer = INPUT_WINDOW_INITIAL
+        else:
+            # Same direction (key repeat): short window for quick release detection
+            self.input_timer = INPUT_WINDOW_REPEAT
+        self.target_vx = new_target
 
     def stop(self):
         """Immediately stop moving."""
