@@ -55,7 +55,29 @@ class TestPlayer:
         start_x = p.x
         p.press_direction(1)
         p.tick()
-        assert p.x == start_x + config.PLAYER_SPEED
+        assert p.x > start_x  # ship moved right
+
+    def test_reaches_max_speed(self):
+        """Ship ramps up to max speed after enough frames."""
+        p = Player(80, 24)
+        for _ in range(10):
+            p.press_direction(1)
+            p.tick()
+        assert p.vx == config.PLAYER_SPEED
+
+    def test_smooth_direction_change(self):
+        """Switching directions transitions smoothly -- no stuck-in-place."""
+        p = Player(80, 24)
+        p.x = 40
+        # Build leftward velocity
+        for _ in range(5):
+            p.press_direction(-1)
+            p.tick()
+        # Switch to right, keep pressing
+        for _ in range(10):
+            p.press_direction(1)
+            p.tick()
+        assert p.vx > 0  # now moving right
 
     def test_movement_auto_stops(self):
         """Ship stops after decay frames with no key input."""

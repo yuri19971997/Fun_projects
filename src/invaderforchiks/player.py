@@ -4,8 +4,10 @@ from asciimatics.screen import Screen
 
 from . import config, sprites
 
-# Frames to keep moving after last direction key (simulates "key release")
-MOVE_DECAY_FRAMES = 6
+# Frames to maintain target direction after last keypress.
+# Covers the gap between releasing one key and terminal key-repeat starting
+# for the new key (~250-500ms).  8 frames @ 20fps = 400ms.
+INPUT_WINDOW = 8
 
 
 class Player:
@@ -20,23 +22,25 @@ class Player:
         self.invincible_timer = 0  # frames of invincibility after hit
         self.shield_timer = 0      # frames of shield power-up (separate from hit invincibility)
         self.screen_width = screen_width
-        # Movement with auto-stop decay
-        self.vx = 0
-        self.move_timer = 0
+        # Smooth acceleration-based movement
+        self.vx = 0           # current velocity (smoothly ramps)
+        self.target_vx = 0    # desired velocity (set by input)
+        self.input_timer = 0  # frames since last direction key
 
     @property
     def is_shielded(self):
         return self.shield_timer > 0
 
     def press_direction(self, direction):
-        """Called on each direction keypress. Sets velocity and refreshes move window."""
-        self.vx = direction * config.PLAYER_SPEED
-        self.move_timer = MOVE_DECAY_FRAMES
+        """Called on each direction keypress. Sets target velocity."""
+        self.target_vx = direction * config.PLAYER_SPEED
+        self.input_timer = INPUT_WINDOW
 
     def stop(self):
         """Immediately stop moving."""
         self.vx = 0
-        self.move_timer = 0
+        self.target_vx = 0
+        self.input_timer = 0
 
     def try_shoot(self):
         """Returns list of new bullet positions if cooldown allows, else empty."""
@@ -84,11 +88,16 @@ class Player:
             self.invincible_timer -= 1
         if self.shield_timer > 0:
             self.shield_timer -= 1
-        # Movement decay: auto-stop when no key pressed recently
-        if self.move_timer > 0:
-            self.move_timer -= 1
-        elif self.vx != 0:
-            self.vx = 0  # stop moving when decay expires
+        # Input timeout: no keys recently -> target velocity decays to zero
+        if self.input_timer > 0:
+            self.input_timer -= 1
+        else:
+            self.target_vx = 0
+        # Accelerate toward target velocity (smooth ramp-up and ramp-down)
+        if self.vx < self.target_vx:
+            self.vx = min(self.vx + config.PLAYER_ACCEL, self.target_vx)
+        elif self.vx > self.target_vx:
+            self.vx = max(self.vx - config.PLAYER_ACCEL, self.target_vx)
         # Apply velocity
         if self.vx != 0:
             self.x = max(0, min(self.screen_width - self.width, self.x + self.vx))

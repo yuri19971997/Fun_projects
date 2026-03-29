@@ -31,10 +31,10 @@ Saves hours for the next agent.
 - Commit: 6d29591
 
 ### Direction change feels stuck -- ship stops between key switches
-- Symptom: Switching from left to right (or vice versa) causes ship to freeze; need to press again to get moving
-- Cause: MOVE_DECAY_FRAMES=3 (150ms at 20fps) expires before terminal key repeat kicks in (~250-500ms). Ship velocity zeroes out in the gap.
-- Fix: Increased MOVE_DECAY_FRAMES to 6 (300ms) and PLAYER_SPEED from 1 to 2 for snappier response
-- Commit: 63747eb
+- Symptom: Switching from left to right (or vice versa) causes ship to freeze momentarily
+- Cause: Binary velocity + decay timer can't distinguish "switching direction" from "released key." Timer expires during terminal key-repeat initial delay (~250-500ms), zeroing velocity.
+- Fix: Replaced with acceleration model: `target_vx` (set by input) + `vx` (smoothly ramps via PLAYER_ACCEL). Direction changes transition through zero smoothly. INPUT_WINDOW=8 (400ms) covers key-repeat gap.
+- Commit: e17d848, then refined with accel model
 
 ### CRITICAL: asciimatics default handler steals SPACE and Q keys
 - Symptom: Arrow keys, A/D, and SPACE do nothing in-game. SPACE sends player back to title menu.
