@@ -8,7 +8,7 @@ from asciimatics.exceptions import StopApplication
 from asciimatics.screen import Screen
 
 from . import config, hud, sprites
-from .enemies import Formation
+from .enemies import Boss, Formation
 from .player import Player
 from .projectiles import Bullet, Egg, Explosion, PowerUp
 from .starfield import Starfield
@@ -131,7 +131,7 @@ class GameScene(Effect):
         if self._wave_banner_timer <= 0:
             new_eggs = self.formation.tick(frame_no)
             for e in new_eggs:
-                self.eggs.append(Egg(e["x"], e["y"], e["dy"]))
+                self.eggs.append(Egg(e["x"], e["y"], e.get("dy", config.EGG_SPEED), e.get("dx", 0)))
 
         # Combo decay
         if self.combo_timer > 0:
@@ -148,7 +148,10 @@ class GameScene(Effect):
             self._game_over = True
             return
         self.wave += 1
-        self.formation = Formation(self.wave, self._screen.width, y_offset=3)
+        if self.wave % config.BOSS_EVERY == 0:
+            self.formation = Boss(self.wave, self._screen.width)
+        else:
+            self.formation = Formation(self.wave, self._screen.width, y_offset=3)
         self._wave_banner_timer = 60  # grace period
         self.eggs.clear()
 
@@ -175,10 +178,13 @@ class GameScene(Effect):
                         # Explosion
                         self.explosions.append(Explosion(c.x + c.width // 2, c.y))
 
-                        # Power-up drop
-                        if random.random() < config.POWERUP_DROP_CHANCE:
+                        # Power-up drops (boss drops 3 guaranteed)
+                        is_boss = isinstance(c, Boss)
+                        drops = 3 if is_boss else (1 if random.random() < config.POWERUP_DROP_CHANCE else 0)
+                        for _ in range(drops):
                             ptype = random.choice(config.POWERUP_TYPES)
-                            self.powerups.append(PowerUp(c.x + 1, c.y, ptype))
+                            drop_x = c.x + random.randint(0, max(0, c.width - 2))
+                            self.powerups.append(PowerUp(drop_x, c.y + c.height, ptype))
 
                         # Extra life check
                         if self.score > 0 and self.score % config.EXTRA_LIFE_SCORE < c.points * multiplier:

@@ -28,19 +28,21 @@ class Bullet:
 
 
 class Egg:
-    """Enemy projectile moving downward."""
+    """Enemy projectile moving downward (optionally diagonal)."""
 
-    def __init__(self, x, y, dy=1):
+    def __init__(self, x, y, dy=1, dx=0):
         self.x = x
         self.y = y
         self.dy = dy
+        self.dx = dx
         self.alive = True
         self.width = 1
         self.height = 1
 
     def tick(self, screen_height):
         self.y += self.dy
-        if self.y >= screen_height:
+        self.x += self.dx
+        if self.y >= screen_height or self.x < 0 or self.x > 999:
             self.alive = False
 
     def render(self, screen):

@@ -28,6 +28,19 @@ DG = 240    # dark gray (armor)
 LG = 250    # light gray (armor)
 MG = 201    # magenta (kamikaze)
 BM = 213    # bright magenta
+GL = 220    # gold
+
+
+def _center_rows(core_rows, width):
+    """Center-pad rich sprite rows to a target width."""
+    result = []
+    for chars, colors in core_rows:
+        pad = width - len(chars)
+        left = pad // 2
+        right = pad - left
+        result.append((" " * left + chars + " " * right,
+                       [0] * left + colors + [0] * right))
+    return result
 
 # ── Player ship (5 wide x 3 tall) ───────────────────────────────────
 # Rich format: list of (char_string, color_list) per row
@@ -160,46 +173,54 @@ EXPLOSION_FRAMES = [
     ],
 ]
 
-# Boss: Rooster General (wave 5) -- 11 wide x 5 tall
-BOSS_ROOSTER = [
-    "   \\\\|//   ",
-    "   (o o)   ",
-    "  /|> <|\\  ",
-    " / |===| \\ ",
-    "/__|___|__\\",
-]
-BOSS_ROOSTER_WIDTH = 11
-BOSS_ROOSTER_HEIGHT = 5
+# ── Boss rich sprites (block-char pixel art) ────────────────────────
 
-# Boss: Egg Mother (wave 10) -- 11 wide x 5 tall
-BOSS_EGG_MOTHER = [
-    "  ___XXX___",
-    " /  o  o  \\",
-    "|  (====)  |",
-    " \\ ooooo / ",
-    "  \\_____/  ",
-]
+# Boss: Rooster General (wave 5) -- 13 wide x 5 tall, red/orange
+BOSS_ROOSTER_RICH = _center_rows([
+    (f"{_L}{_F}{_F}{_F}{_L}", [RD, RD, RD, RD, RD]),
+    (f"{_R}{_F}{_U}{_F}{_F}{_U}{_F}{_K}", [OR, OR, WH, RD, RD, WH, OR, OR]),
+    (f"{_R}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_K}", [OR]*11),
+    (f"{_U}{_F}{_L}{_F}{_F}{_F}{_L}{_F}{_U}", [OR, OR, YL, OR, OR, OR, YL, OR, OR]),
+    (f"{_U}{_U} {_U}{_U}", [YL, YL, _, YL, YL]),
+], width=13)
+BOSS_ROOSTER_W = 13
+BOSS_ROOSTER_H = 5
 
-# Boss: Colonel Cluck (wave 15) -- 11 wide x 5 tall
-BOSS_COLONEL = [
-    "  [=====]  ",
-    "  \\(o o)/  ",
-    "   |>w<|   ",
-    "  /|===|\\  ",
-    " /_|___|_\\ ",
-]
+# Boss: Egg Mother (wave 10) -- 15 wide x 5 tall, white/yellow
+BOSS_EGG_MOTHER_RICH = _center_rows([
+    (f"{_L}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_L}", [WH]*9),
+    (f"{_R}{_F}{_F}{_U}{_F}{_F}{_F}{_U}{_F}{_F}{_K}", [WH, WH, WH, YL, WH, WH, WH, YL, WH, WH, WH]),
+    (f"{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}", [YL, WH, WH, WH, WH, WH, WH, WH, WH, WH, WH, WH, YL]),
+    (f"{_R}{_F}{_F}{_L}{_L}{_L}{_L}{_L}{_F}{_F}{_K}", [WH, WH, WH, YL, YL, YL, YL, YL, WH, WH, WH]),
+    (f"{_U}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_U}", [WH]*9),
+], width=15)
+BOSS_EGG_MOTHER_W = 15
+BOSS_EGG_MOTHER_H = 5
 
-# Boss: Supreme Hen (wave 20) -- 13 wide x 6 tall
-BOSS_SUPREME = [
-    "  ****|****  ",
-    " * \\(o_o)/ * ",
-    " *  |===|  * ",
-    " * /|   |\\ * ",
-    " */_|___|_\\* ",
-    "  *********  ",
-]
-BOSS_SUPREME_WIDTH = 13
-BOSS_SUPREME_HEIGHT = 6
+# Boss: Colonel Cluck (wave 15) -- 15 wide x 6 tall, silver/gray military
+BOSS_COLONEL_RICH = _center_rows([
+    (f"{_L}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_L}", [DG, LG, LG, LG, LG, LG, LG, LG, DG]),
+    (f"{_R}{_F}{_U}{_F}{_F}{_F}{_U}{_F}{_K}", [DG, LG, WH, LG, LG, LG, WH, LG, DG]),
+    (f"{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}", [DG, LG, LG, LG, LG, LG, LG, LG, LG, LG, LG, LG, DG]),
+    (f"{_R}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_K}", [DG]*11),
+    (f"{_U}{_F}{_L}{_F}{_F}{_F}{_L}{_F}{_U}", [LG, LG, RD, LG, LG, LG, RD, LG, LG]),
+    (f"{_U}{_U} {_U} {_U}{_U}", [DG, DG, _, DG, _, DG, DG]),
+], width=15)
+BOSS_COLONEL_W = 15
+BOSS_COLONEL_H = 6
+
+# Boss: Supreme Hen (wave 20) -- 17 wide x 7 tall, gold/red royal
+BOSS_SUPREME_RICH = _center_rows([
+    (f"{_U}{_L}{_F}{_U}{_F}{_U}{_F}{_L}{_U}", [GL, GL, GL, RD, GL, RD, GL, GL, GL]),
+    (f"{_L}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_L}", [GL]*13),
+    (f"{_R}{_F}{_F}{_U}{_F}{_F}{_F}{_F}{_F}{_U}{_F}{_F}{_K}", [GL, GL, GL, WH, RD, GL, GL, GL, RD, WH, GL, GL, GL]),
+    (f"{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}", [RD, GL, GL, GL, GL, GL, GL, GL, GL, GL, GL, GL, GL, GL, RD]),
+    (f"{_R}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_F}{_K}", [GL]*13),
+    (f"{_U}{_F}{_F}{_L}{_F}{_F}{_F}{_F}{_F}{_L}{_F}{_F}{_U}", [GL, GL, GL, RD, GL, GL, GL, GL, GL, RD, GL, GL, GL]),
+    (f"{_U}{_U}{_U} {_U}{_U}{_U} {_U}{_U}{_U}", [GL, GL, GL, _, RD, RD, RD, _, GL, GL, GL]),
+], width=17)
+BOSS_SUPREME_W = 17
+BOSS_SUPREME_H = 7
 
 # Title screen art
 TITLE_ART = [
