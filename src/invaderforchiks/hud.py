@@ -20,7 +20,7 @@ def render_top_bar(screen, score, lives, wave):
     screen.print_at(wave_text, cx, y, colour=config.COLOR_HUD, attr=Screen.A_BOLD)
 
     # Lives on right
-    lives_text = f" LIVES: {'<3 ' * lives}"
+    lives_text = f" LIVES: {'\u2665 ' * lives}"
     rx = width - len(lives_text)
     screen.print_at(lives_text, max(0, rx), y, colour=196, attr=Screen.A_BOLD)
 

@@ -65,7 +65,7 @@ SPREAD_BULLET_R = "\\"
 
 # Power-up icons -- wide labels with clear meaning
 POWERUP_WEAPON = "<GUN UP>"
-POWERUP_LIFE = "< +1 HP>"
+POWERUP_LIFE = "\u2665 LIFE \u2665"
 POWERUP_SHIELD = "<SHIELD>"
 POWERUP_MISSILE = "< BOOM >"
 
