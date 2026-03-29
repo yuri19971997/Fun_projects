@@ -20,8 +20,9 @@ class GameScene(Effect):
     # Prevent asciimatics default handler from stealing our keys
     safe_to_default_unhandled_input = False
 
-    def __init__(self, screen):
+    def __init__(self, screen, start_wave=1):
         super().__init__(screen)
+        self._start_wave = start_wave
         self._game_over = False
         self._paused = False
         self._wave_banner_timer = 0
@@ -37,10 +38,13 @@ class GameScene(Effect):
         self.explosions = []
         self.powerups = []
         self.score = 0
-        self.wave = 1
+        self.wave = self._start_wave
         self.combo = 0
         self.combo_timer = 0
-        self.formation = Formation(self.wave, w, y_offset=3)
+        if self.wave % config.BOSS_EVERY == 0:
+            self.formation = Boss(self.wave, w)
+        else:
+            self.formation = Formation(self.wave, w, y_offset=3)
         self._game_over = False
         self._wave_banner_timer = 60  # grace period: no enemy fire during banner
         self.starfield = Starfield(w, h, y_min=2, y_max=h - 2)

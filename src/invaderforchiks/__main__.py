@@ -1,5 +1,7 @@
 """Entry point -- launches the game."""
 
+import argparse
+
 from asciimatics.exceptions import ResizeScreenError, StopApplication
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
@@ -9,7 +11,7 @@ from .game import GameScene
 from .title import TitleScreen
 
 
-def game_loop(screen):
+def game_loop(screen, start_wave=1):
     """Run title screen then game, handling transitions via NextScene."""
     # Check minimum terminal size
     if screen.width < config.MIN_WIDTH or screen.height < config.MIN_HEIGHT:
@@ -21,19 +23,27 @@ def game_loop(screen):
         screen.wait_for_input(10)
         return
 
+    game = GameScene(screen, start_wave=start_wave)
     scenes = [
         Scene([TitleScreen(screen)], -1, name="title"),
-        Scene([GameScene(screen)], -1, name="game"),
+        Scene([game], -1, name="game"),
     ]
 
-    screen.play(scenes, stop_on_resize=True, repeat=True)
+    # Skip title screen if starting at a specific wave
+    start = scenes[1] if start_wave > 1 else None
+    screen.play(scenes, stop_on_resize=True, repeat=True, start_scene=start)
 
 
 def main():
     """Entry point."""
+    parser = argparse.ArgumentParser(description="Invader for Chiks")
+    parser.add_argument("--wave", type=int, default=1,
+                        help="Start at wave N (e.g. --wave 5 for first boss)")
+    args = parser.parse_args()
+
     while True:
         try:
-            Screen.wrapper(game_loop)
+            Screen.wrapper(game_loop, arguments=[args.wave])
             break
         except ResizeScreenError:
             continue
