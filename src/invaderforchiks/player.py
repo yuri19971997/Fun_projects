@@ -117,22 +117,18 @@ class Player:
             self.x = max(0, min(self.screen_width - self.width, self.x + self.vx))
 
     def render(self, screen, frame_no):
-        # Pick sprite based on state
+        # Pick rich sprite based on state
         if self.shield_timer > 0:
-            sprite = sprites.PLAYER_SHIELD
-            color = config.COLOR_POWERUP_SHIELD
+            rich = sprites.PLAYER_SHIELD_RICH
         elif self.invincible_timer > 0 and frame_no % 4 < 2:
-            sprite = sprites.PLAYER_HIT
-            color = config.COLOR_PLAYER
+            rich = sprites.PLAYER_HIT_RICH
         else:
-            sprite = sprites.PLAYER_SHIP
-            color = config.COLOR_PLAYER
+            rich = sprites.PLAYER_SHIP_RICH
 
-        for i, line in enumerate(sprite):
-            screen.print_at(
-                line,
-                self.x,
-                self.y + i,
-                colour=color,
-                attr=Screen.A_BOLD,
-            )
+        for row_idx, (chars, colors) in enumerate(rich):
+            for col_idx, (ch, fg) in enumerate(zip(chars, colors)):
+                if fg and ch != " ":
+                    screen.print_at(
+                        ch, self.x + col_idx, self.y + row_idx,
+                        colour=fg, attr=Screen.A_BOLD,
+                    )

@@ -1,6 +1,50 @@
-"""ASCII art sprite definitions -- single source of truth for all visuals."""
+"""ASCII art sprite definitions -- single source of truth for all visuals.
 
-# Player ship (5 wide x 3 tall)
+Rich sprites use Unicode block characters (█▀▄▐▌) with per-character
+foreground colors for a pixel-art look.  Format: list of (chars, colors)
+tuples per row.  A color of 0 means transparent (skip).
+"""
+
+# ── Block character aliases ──────────────────────────────────────────
+_F = "\u2588"  # █ full block
+_U = "\u2580"  # ▀ upper half
+_L = "\u2584"  # ▄ lower half
+_R = "\u2590"  # ▐ right half
+_K = "\u258c"  # ▌ left half
+
+# ── Color palette shortcuts ──────────────────────────────────────────
+_  = 0      # transparent
+CY = 51     # cyan
+WH = 255    # white
+GR = 46     # bright green
+GD = 34     # dark green
+YL = 226    # yellow
+RD = 196    # red
+OG = 208    # orange
+BG = 82     # brighter green
+SH = 87     # shield cyan
+
+# ── Player ship (5 wide x 3 tall) ───────────────────────────────────
+# Rich format: list of (char_string, color_list) per row
+PLAYER_SHIP_RICH = [
+    (f"  {_U}  ", [_, _, CY, _, _]),
+    (f" {_R}{_F}{_K} ", [_, GD, GR, GD, _]),
+    (f"{_U}{_F}{_F}{_F}{_U}", [YL, GD, BG, GD, YL]),
+]
+
+PLAYER_HIT_RICH = [
+    (f"  {_U}  ", [_, _, WH, _, _]),
+    (f" {_R}{_F}{_K} ", [_, OG, RD, OG, _]),
+    (f"{_U}{_F}{_F}{_F}{_U}", [YL, OG, RD, OG, YL]),
+]
+
+PLAYER_SHIELD_RICH = [
+    (f"  {_U}  ", [_, _, WH, _, _]),
+    (f" {_R}{_F}{_K} ", [_, SH, CY, SH, _]),
+    (f"{_U}{_F}{_F}{_F}{_U}", [WH, SH, CY, SH, WH]),
+]
+
+# Plain-text fallbacks (kept for title screen decorations / tests)
 PLAYER_SHIP = [
     "  ^  ",
     " /#\\ ",
@@ -9,14 +53,12 @@ PLAYER_SHIP = [
 PLAYER_WIDTH = 5
 PLAYER_HEIGHT = 3
 
-# Player ship hit (flashing)
 PLAYER_HIT = [
     "  *  ",
     " *X* ",
     "*===*",
 ]
 
-# Player ship with shield active (cyan bubble)
 PLAYER_SHIELD = [
     " (^) ",
     "(/#\\)",
