@@ -36,6 +36,12 @@ Saves hours for the next agent.
 - Fix: Replaced with acceleration model: `target_vx` (set by input) + `vx` (smoothly ramps via PLAYER_ACCEL). Direction changes transition through zero smoothly. INPUT_WINDOW=8 (400ms) covers key-repeat gap.
 - Commit: e17d848, then refined with accel model
 
+### Shooting stops the ship -- SPACE key interrupts direction key repeat
+- Symptom: Ship freezes in place whenever you press SPACE to shoot while moving
+- Cause: Terminals send one key at a time. SPACE interrupts the direction key repeat stream. With INPUT_WINDOW_REPEAT=3 (150ms), the movement timer expires before direction keys resume.
+- Fix: Added `Player.keep_moving()` which refreshes `input_timer` to INPUT_WINDOW_INITIAL. Called from the SPACE handler in process_event so shooting preserves current momentum.
+- Commit: (this session)
+
 ### CRITICAL: asciimatics default handler steals SPACE and Q keys
 - Symptom: Arrow keys, A/D, and SPACE do nothing in-game. SPACE sends player back to title menu.
 - Cause: screen.play() calls get_event() and passes events to scene.process_event() THEN to _unhandled_event_default(). Our effects didn't implement process_event(), so ALL keys were "unhandled". The default handler maps SPACE->NextScene (back to title!) and Q->StopApplication.

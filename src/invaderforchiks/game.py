@@ -89,6 +89,7 @@ class GameScene(Effect):
                 self.player.stop()
                 return None
             elif key == ord(" "):
+                self.player.keep_moving()
                 new_bullets = self.player.try_shoot()
                 for b in new_bullets:
                     self.bullets.append(Bullet(b["x"], b["y"], b["dx"], b["dy"], b["char"]))

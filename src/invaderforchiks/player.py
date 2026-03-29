@@ -51,6 +51,11 @@ class Player:
         self.target_vx = 0
         self.input_timer = 0
 
+    def keep_moving(self):
+        """Refresh input timer so non-direction keys (SPACE) don't kill momentum."""
+        if self.target_vx != 0:
+            self.input_timer = max(self.input_timer, INPUT_WINDOW_INITIAL)
+
     def try_shoot(self):
         """Returns list of new bullet positions if cooldown allows, else empty."""
         if self.shoot_cooldown > 0:
