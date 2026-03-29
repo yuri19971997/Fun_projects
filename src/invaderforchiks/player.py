@@ -35,15 +35,14 @@ class Player:
         return self.shield_timer > 0
 
     def press_direction(self, direction):
-        """Called on each direction keypress. Sets target velocity."""
-        new_target = direction * config.PLAYER_SPEED
-        if new_target != self.target_vx:
-            # New direction (or starting from stopped): long window
+        """Called on each direction keypress. Instantly sets velocity."""
+        new_vx = direction * config.PLAYER_SPEED
+        self.vx = new_vx  # instant -- no decel/accel pause on direction change
+        if new_vx != self.target_vx:
             self.input_timer = INPUT_WINDOW_INITIAL
         else:
-            # Same direction (key repeat): short window for quick release detection
             self.input_timer = INPUT_WINDOW_REPEAT
-        self.target_vx = new_target
+        self.target_vx = new_vx
 
     def stop(self):
         """Immediately stop moving."""
