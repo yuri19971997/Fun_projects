@@ -334,7 +334,7 @@ class Boss:
         filled = max(0, int(bar_w * self.hp / self.max_hp))
         bar = "\u2588" * filled + "\u2591" * (bar_w - filled)
         bar_y = self.y + self.height
-        color = RD if self.hp < self.max_hp // 4 else OG if self.hp < self.max_hp // 2 else GR
+        color = 196 if self.hp < self.max_hp // 4 else 208 if self.hp < self.max_hp // 2 else 46
         screen.print_at(bar, self.x, bar_y, colour=color)
         name_x = self.x + (self.width - len(self.name)) // 2
         screen.print_at(self.name, max(0, name_x), bar_y + 1,
