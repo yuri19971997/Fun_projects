@@ -5,7 +5,7 @@ from asciimatics.screen import Screen
 from . import config, sprites
 
 # Frames to keep moving after last direction key (simulates "key release")
-MOVE_DECAY_FRAMES = 3
+MOVE_DECAY_FRAMES = 6
 
 
 class Player:

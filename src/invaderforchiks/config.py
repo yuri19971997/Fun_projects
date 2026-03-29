@@ -6,7 +6,7 @@ MIN_HEIGHT = 24
 FPS = 20  # asciimatics default is ~20fps
 
 # Player
-PLAYER_SPEED = 1          # cells per frame when moving (smooth and aimable)
+PLAYER_SPEED = 2          # cells per frame when moving (responsive for dodging)
 PLAYER_START_LIVES = 3
 EXTRA_LIFE_SCORE = 5000   # bonus life every N points
 BULLET_SPEED = 2

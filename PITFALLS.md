@@ -30,6 +30,12 @@ Saves hours for the next agent.
 - Fix: Drain input buffer with `while self._screen.get_event() is not None: pass` in _init_game()
 - Commit: 6d29591
 
+### Direction change feels stuck -- ship stops between key switches
+- Symptom: Switching from left to right (or vice versa) causes ship to freeze; need to press again to get moving
+- Cause: MOVE_DECAY_FRAMES=3 (150ms at 20fps) expires before terminal key repeat kicks in (~250-500ms). Ship velocity zeroes out in the gap.
+- Fix: Increased MOVE_DECAY_FRAMES to 6 (300ms) and PLAYER_SPEED from 1 to 2 for snappier response
+- Commit: 63747eb
+
 ### CRITICAL: asciimatics default handler steals SPACE and Q keys
 - Symptom: Arrow keys, A/D, and SPACE do nothing in-game. SPACE sends player back to title menu.
 - Cause: screen.play() calls get_event() and passes events to scene.process_event() THEN to _unhandled_event_default(). Our effects didn't implement process_event(), so ALL keys were "unhandled". The default handler maps SPACE->NextScene (back to title!) and Q->StopApplication.
