@@ -2,7 +2,7 @@
 
 > **New here?** Read in order: this file, then `PITFALLS.md`, then `AGENTS.md`. For reasoning: `WHY.md`.
 
-Last updated: 2026-03-25. If anything here contradicts reality, fix this file.
+Last updated: 2026-03-29. If anything here contradicts reality, fix this file.
 
 ---
 
@@ -15,50 +15,69 @@ Last updated: 2026-03-25. If anything here contradicts reality, fix this file.
 ```bash
 cd ~/projects/invaderForChiks
 uv sync                      # Install dependencies
-uv run pytest                # Run tests (35 tests, all should pass)
+uv run pytest                # Run tests (37 tests, all should pass)
 uv run invaderforchiks       # Launch the game
+uv run invaderforchiks --wave 5   # Skip to boss fight for testing
 ```
 
 ---
 
-## What works (verified 2026-03-25)
+## What works (verified 2026-03-29)
 
 ### Core gameplay
 - Title screen with animated menu (arrow keys / WASD + SPACE/ENTER)
-- Player ship with velocity-based movement + auto-stop decay (no infinite sliding)
-- Direct shooting: each SPACE press = one shot, hold SPACE for rapid fire via terminal key repeat
-- 3 weapon levels: Pea Shooter, Dual Shot, Spread Shot (+ 3 more defined but not fully differentiated)
+- Player ship with instant direction changes + smooth deceleration on release
+- Two-tier input window: INITIAL=8 (400ms) for new direction, REPEAT=2 (100ms) for held key
+- SPACE keeps momentum alive (keep_moving) so shooting doesn't stop the ship
+- 6 fully differentiated weapon levels:
+  - Level 0: Pea Shooter (1 bullet)
+  - Level 1: Dual Shot (2 parallel)
+  - Level 2: Spread Shot (3-way fan)
+  - Level 3: Rapid Fire (3-way + 2x fire rate)
+  - Level 4: Laser Beam (5-way wide + 2x fire rate)
+  - Level 5: Homing Eggs (5-way + max fire rate + faster bullets)
 - Chicken formation that marches Space Invaders-style and shoots eggs
 - 4 chicken types: regular, armored (2 hits), bomber (shoots more), kamikaze
-- AABB collision detection (bullets->chickens, eggs->player, player->powerups)
+- **4 boss fights** on waves 5, 10, 15, 20 with unique attacks:
+  - Rooster General (30HP, 3-way spread, enrages at 50%)
+  - Egg Mother (50HP, cluster bombs, wider clusters at 50%)
+  - Colonel Cluck (70HP, rapid singles + egg walls, faster at 50%)
+  - Supreme Hen (100HP, sinusoidal movement, spreads + rain + bursts)
+  - All bosses have HP bar + name display, drop 3 power-ups on death
+  - Boss eggs support diagonal movement (dx parameter)
+- AABB collision detection (bullets->chickens/bosses, eggs->player, player->powerups)
 - Scoring with combo multiplier (chain kills within 30 frames)
-- Power-up drops with clear labels and distinct colors:
-  - `<GUN UP>` orange -- weapon upgrade
-  - `< +1 HP>` green -- extra life
-  - `<SHIELD>` cyan -- absorbs one hit, shows visual on ship + HUD
-  - `< BOOM >` red -- kills 3 random chickens
+- Power-up drops with visual icons:
+  - `▄█▀═══▸` orange -- weapon upgrade (gun silhouette)
+  - `♥ LIFE ♥` green -- extra life (hearts)
+  - `(█╋█)` cyan -- shield (shield icon)
+  - `▄▀★▀▄` red -- boom, kills 3 random chickens (explosion icon)
 - 20-wave structure with difficulty scaling per wave
 - Grace period (60 frames) at start of each wave -- no enemy fire during banner
 - Game over screen with score + restart (SPACE) or quit (Q)
 - Extra lives from score milestones (every 5000 points)
+- `--wave N` flag to start at any wave (skips title screen)
 
 ### Visual
-- Full ASCII art sprites for ship, chickens (4 types), bosses (4 defined), explosions (3-frame animation)
-- 256-color palette with distinct colors per element
-- Shield indicator: ship sprite changes to cyan bubble `(^)/(/ \)/(_____)` + HUD shows `[SHIELD ACTIVE]`
-- HUD: top bar (score/lives/wave), bottom bar (weapon name/shield/combo), separator lines
+- **Pixel-art sprites** using Unicode block characters (█▀▄▐▌) with per-character 256-color rendering
+- Player ship: tapered fighter silhouette (cyan weapon, green hull, yellow engines)
+- 4 chicken types: distinct block-char silhouettes with type-specific colors
+- 4 boss sprites: large (13-17 wide), color-coded (red/white/silver/gold)
+- Twinkling starfield background (7 star types, 2% twinkle rate per frame)
+- HUD: top bar (score/♥ lives/wave), bottom bar (weapon name/shield/combo)
+- Shield: ship glows cyan + HUD shows [SHIELD ACTIVE]
+- Explosion: 3-frame \\|/--*-- starburst animation
 
 ### Technical
 - Python 3.12+ with asciimatics 1.15
 - Package installable via `uv run invaderforchiks` or `python -m invaderforchiks`
-- 35 automated tests covering collision, player mechanics, enemy types, projectiles, power-ups, shield, movement decay
-- Project docs from agent-project-template (AGENTS.md, HANDOFF.md, PITFALLS.md, CHANGELOG.md, WHY.md)
-- Git hooks configured, 7 commits on master
+- 37 automated tests covering collision, player mechanics, enemy types, projectiles, power-ups, shield, movement, direction changes
+- Rich sprite format: list of (chars, colors) per row for per-character coloring
 
 ### Controls
 | Key | Action |
 |-----|--------|
-| A/D or Left/Right | Move (auto-stops when you stop pressing) |
+| A/D or Left/Right | Move (instant direction change, auto-stops on release) |
 | S or Down | Instant stop |
 | Space | Shoot (hold for rapid fire) |
 | P | Pause |
@@ -71,22 +90,27 @@ uv run invaderforchiks       # Launch the game
 ```
 src/invaderforchiks/
   __init__.py       # Package init, version
-  __main__.py       # Entry point: Screen.wrapper -> scene management (title + game)
+  __main__.py       # Entry point: argparse (--wave), Screen.wrapper -> scene management
   game.py           # GameScene(Effect): process_event for input, _update for logic, _render for display
   title.py          # TitleScreen(Effect): animated menu with scene transitions
-  player.py         # Player class: velocity movement with decay, shooting, shield, weapon levels
-  enemies.py        # Chicken + Formation: 4 types, grid movement, egg spawning
-  projectiles.py    # Bullet, Egg, Explosion (animated), PowerUp (typed + colored)
+  player.py         # Player class: instant vx on keypress, two-tier input window, 6 weapon levels
+  enemies.py        # Chicken + Formation + Boss: 4 chicken types, 4 boss types with unique attacks
+  projectiles.py    # Bullet, Egg (with dx for diagonal), Explosion (animated), PowerUp
   hud.py            # render_top_bar, render_bottom_bar, render_wave_banner, render_game_over
   config.py         # ALL tunable constants (speeds, rates, colors, sizes)
-  sprites.py        # ALL ASCII art (ship, chickens, bosses, explosions, power-ups, title art)
+  sprites.py        # ALL sprites: rich format (block chars + per-char colors), plain fallbacks
+  starfield.py      # Twinkling star background for space ambiance
 ```
 
 ### Key architecture decisions
-- **Input via process_event()** -- NOT get_event() in _update(). asciimatics' play() loop consumes events before _update runs. process_event() returns None to prevent default handler from stealing SPACE/Q keys.
-- **safe_to_default_unhandled_input = False** on both effects to disable asciimatics' default key handler
-- **frame_update_count = 1** forces screen refresh every frame for smooth animation
-- **Movement decay timer** (3 frames) simulates key-release in terminal where key-up events don't exist
+- **Input via process_event()** -- NOT get_event() in _update(). See PITFALLS.md.
+- **safe_to_default_unhandled_input = False** on both effects
+- **frame_update_count = 1** forces screen refresh every frame
+- **Instant vx on keypress** -- press_direction() sets vx directly for zero-delay direction changes
+- **Two-tier input window** -- INITIAL (400ms) for new direction, REPEAT (100ms) for held key
+- **keep_moving()** refreshes timer to REPEAT on SPACE so shooting doesn't stop the ship
+- **Boss duck-types as Formation** -- same interface (alive_chickens, all_dead, tick, render) so game loop needs minimal changes
+- **Rich sprite format** -- (chars_string, color_list) per row for per-character 256-color rendering
 - **Config.py is the single tuning file** -- all gameplay numbers in one place
 
 ---
@@ -94,32 +118,30 @@ src/invaderforchiks/
 ## Build & deploy
 
 ```bash
-uv sync                       # Install dependencies
-uv run invaderforchiks         # Run the game
-uv run pytest                  # Run tests
-uv build                       # Build distributable package
+uv sync                              # Install dependencies
+uv run invaderforchiks               # Run the game
+uv run invaderforchiks --wave 5      # Jump to first boss
+uv run pytest                        # Run tests (37 should pass)
+uv build                             # Build distributable package
 ```
 
 ---
 
 ## Known limitations
 
-- Weapon levels 3-5 (Rapid Fire, Laser Beam, Homing Eggs) not yet differentiated in shooting mechanics -- they all use the spread shot pattern
-- Boss fights not implemented (bosses defined in sprites.py but no boss gameplay logic)
 - No high score persistence (scores lost on quit)
 - No sound (terminal limitation)
 - No endless mode yet (only 20-wave story mode)
-- Terminal must support 256 colors; minimum 80x24
+- Terminal must support 256 colors and Unicode block chars; minimum 80x24
 
 ## Future work (priority order)
 
-1. **Differentiate weapon levels 3-5** -- Rapid Fire (lower cooldown), Laser Beam (piercing), Homing Eggs (auto-aim)
-2. **Boss fights** -- Unique behavior for waves 5, 10, 15, 20 using existing boss sprites
-3. **High score persistence** -- Save top scores to ~/.invaderforchiks/scores.json
-4. **Endless mode** -- Unlocked after completing wave 20
-5. **More wave patterns** -- V-formations, spiral entry, dive attacks
-6. **Screen shake / flash effects** on big explosions
-7. **Overheat mechanic** -- Hold fire too long and weapon overheats temporarily
+1. **High score persistence** -- Save top scores to ~/.invaderforchiks/scores.json
+2. **Endless mode** -- Unlocked after completing wave 20
+3. **More wave patterns** -- V-formations, spiral entry, dive attacks
+4. **Screen shake / flash effects** on big explosions
+5. **Overheat mechanic** -- Hold fire too long and weapon overheats temporarily
+6. **Boss polish** -- More dramatic death animations, phase transition effects
 
 ---
 
@@ -128,19 +150,17 @@ uv build                       # Build distributable package
 Copy this prompt to start a new agent session:
 
 ```
-Read HANDOFF.md and PITFALLS.md in ~/projects/invaderForChiks.
-Run `uv run pytest` to verify tests pass.
-Run `uv run invaderforchiks` briefly to confirm the game launches.
+We are working on ~/projects/invaderForChiks -- a TUI Space Invaders game with chickens.
 
-For each future work item (in priority order):
-1. Investigate -- read the relevant code, understand the current state
-2. Plan -- break into tasks with pass conditions. Write them to the todo list.
-3. Implement -- one task at a time. Test after each. Commit after each.
-4. Update HANDOFF.md. Add PITFALLS.md entries for any bugs found.
+Read these files in order:
+- ~/projects/invaderForChiks/HANDOFF.md (current state, architecture, what works, what's next)
+- ~/projects/invaderForChiks/PITFALLS.md (critical bugs we already solved)
+- ~/projects/invaderForChiks/AGENTS.md (project rules and game design decisions)
 
-Key files to read first: config.py (all tuning), game.py (main loop),
-player.py (controls), enemies.py (chicken behavior).
+Then run:
+- uv run pytest (should be 37 passing)
+- uv run invaderforchiks (confirm it launches)
 
-CRITICAL: Input handling MUST use process_event(), never get_event().
-See PITFALLS.md for why.
+After reading, tell me what you understand about where we are and what's next.
+Then we continue from the "Future work" list in HANDOFF.md.
 ```

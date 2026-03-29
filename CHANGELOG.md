@@ -4,6 +4,9 @@ One paragraph per milestone. Most recent first. See `git log` for full history.
 
 ---
 
+### Boss fights + visual overhaul + movement rework (2026-03-29)
+Major session: implemented full boss fight system (4 bosses with unique attacks, HP bars, enrage at 50%), pixel-art visual overhaul (Unicode block characters with per-character 256-color rendering for ship, all 4 chicken types, all 4 bosses), twinkling starfield background, all 6 weapon levels differentiated (rapid fire, 5-way spread, max fire rate), power-up icons (gun silhouette, hearts, shield icon, explosion icon), movement rework (instant direction changes via direct vx setting, two-tier input window, keep_moving for SPACE, ACCEL=SPEED=2 for zero ramp delay), diagonal egg support for boss attacks, `--wave N` flag for testing. 37 tests passing.
+
 ### Controls refinement v3 (2026-03-25)
 Fixed infinite sliding: movement now auto-stops after 3 frames of no key input. Sped up chickens (2x faster marching, ~3x more eggs). Added shield visual indicator -- ship sprite changes to cyan bubble, HUD shows `[SHIELD ACTIVE]`. Shield absorbs one hit then breaks. 35 tests passing.
 
