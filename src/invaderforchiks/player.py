@@ -59,25 +59,59 @@ class Player:
         """Returns list of new bullet positions if cooldown allows, else empty."""
         if self.shoot_cooldown > 0:
             return []
-        self.shoot_cooldown = config.BULLET_COOLDOWN
 
         center_x = self.x + self.width // 2
         top_y = self.y - 1
+        spd = -config.BULLET_SPEED
 
         if self.weapon_level == 0:
-            return [{"x": center_x, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET}]
+            # Pea Shooter: single shot
+            self.shoot_cooldown = config.BULLET_COOLDOWN
+            return [{"x": center_x, "y": top_y, "dx": 0, "dy": spd, "char": sprites.BULLET}]
         elif self.weapon_level == 1:
+            # Dual Shot: two parallel
+            self.shoot_cooldown = config.BULLET_COOLDOWN
             return [
-                {"x": center_x - 1, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET},
-                {"x": center_x + 1, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET},
+                {"x": center_x - 1, "y": top_y, "dx": 0, "dy": spd, "char": sprites.BULLET},
+                {"x": center_x + 1, "y": top_y, "dx": 0, "dy": spd, "char": sprites.BULLET},
             ]
-        elif self.weapon_level >= 2:
+        elif self.weapon_level == 2:
+            # Spread Shot: 3-way fan
+            self.shoot_cooldown = config.BULLET_COOLDOWN
             return [
-                {"x": center_x - 1, "y": top_y, "dx": -1, "dy": -config.BULLET_SPEED, "char": sprites.SPREAD_BULLET_L},
-                {"x": center_x, "y": top_y, "dx": 0, "dy": -config.BULLET_SPEED, "char": sprites.BULLET},
-                {"x": center_x + 1, "y": top_y, "dx": 1, "dy": -config.BULLET_SPEED, "char": sprites.SPREAD_BULLET_R},
+                {"x": center_x - 1, "y": top_y, "dx": -1, "dy": spd, "char": sprites.SPREAD_BULLET_L},
+                {"x": center_x, "y": top_y, "dx": 0, "dy": spd, "char": sprites.BULLET},
+                {"x": center_x + 1, "y": top_y, "dx": 1, "dy": spd, "char": sprites.SPREAD_BULLET_R},
             ]
-        return []
+        elif self.weapon_level == 3:
+            # Rapid Fire: 3-way fan + faster fire rate
+            self.shoot_cooldown = max(1, config.BULLET_COOLDOWN // 2)
+            return [
+                {"x": center_x - 1, "y": top_y, "dx": -1, "dy": spd, "char": sprites.SPREAD_BULLET_L},
+                {"x": center_x, "y": top_y, "dx": 0, "dy": spd, "char": sprites.BULLET},
+                {"x": center_x + 1, "y": top_y, "dx": 1, "dy": spd, "char": sprites.SPREAD_BULLET_R},
+            ]
+        elif self.weapon_level == 4:
+            # Laser Beam: 5-way wide spread + fast fire
+            self.shoot_cooldown = max(1, config.BULLET_COOLDOWN // 2)
+            return [
+                {"x": center_x - 2, "y": top_y, "dx": -2, "dy": spd, "char": sprites.SPREAD_BULLET_L},
+                {"x": center_x - 1, "y": top_y, "dx": -1, "dy": spd, "char": sprites.SPREAD_BULLET_L},
+                {"x": center_x, "y": top_y, "dx": 0, "dy": spd, "char": sprites.BULLET},
+                {"x": center_x + 1, "y": top_y, "dx": 1, "dy": spd, "char": sprites.SPREAD_BULLET_R},
+                {"x": center_x + 2, "y": top_y, "dx": 2, "dy": spd, "char": sprites.SPREAD_BULLET_R},
+            ]
+        else:
+            # Homing Eggs (level 5): 5-way + fastest fire + faster bullets
+            self.shoot_cooldown = 1
+            fast = spd - 1
+            return [
+                {"x": center_x - 2, "y": top_y, "dx": -2, "dy": fast, "char": sprites.SPREAD_BULLET_L},
+                {"x": center_x - 1, "y": top_y, "dx": -1, "dy": fast, "char": sprites.SPREAD_BULLET_L},
+                {"x": center_x, "y": top_y, "dx": 0, "dy": fast, "char": sprites.BULLET},
+                {"x": center_x + 1, "y": top_y, "dx": 1, "dy": fast, "char": sprites.SPREAD_BULLET_R},
+                {"x": center_x + 2, "y": top_y, "dx": 2, "dy": fast, "char": sprites.SPREAD_BULLET_R},
+            ]
 
     def hit(self):
         """Player takes damage. Returns True if dead."""
