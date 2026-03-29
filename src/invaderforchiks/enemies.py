@@ -20,6 +20,16 @@ class Chicken:
         self.height = sprites.CHICKEN_HEIGHT
 
     @property
+    def rich_sprite(self):
+        if self.chicken_type == "armored":
+            return sprites.ARMORED_CHICKEN_RICH
+        elif self.chicken_type == "bomber":
+            return sprites.BOMBER_CHICKEN_RICH
+        elif self.chicken_type == "kamikaze":
+            return sprites.KAMIKAZE_CHICKEN_RICH
+        return sprites.CHICKEN_RICH
+
+    @property
     def sprite(self):
         if self.chicken_type == "armored":
             return sprites.ARMORED_CHICKEN
@@ -67,8 +77,10 @@ class Chicken:
     def render(self, screen):
         if not self.alive:
             return
-        for i, line in enumerate(self.sprite):
-            screen.print_at(line, self.x, self.y + i, colour=self.color)
+        for row_idx, (chars, colors) in enumerate(self.rich_sprite):
+            for col_idx, (ch, fg) in enumerate(zip(chars, colors)):
+                if fg and ch != " ":
+                    screen.print_at(ch, self.x + col_idx, self.y + row_idx, colour=fg)
 
 
 class Formation:

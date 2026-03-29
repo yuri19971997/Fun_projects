@@ -23,6 +23,11 @@ RD = 196    # red
 OG = 208    # orange
 BG = 82     # brighter green
 SH = 87     # shield cyan
+OR = 209    # orange-red (chicken)
+DG = 240    # dark gray (armor)
+LG = 250    # light gray (armor)
+MG = 201    # magenta (kamikaze)
+BM = 213    # bright magenta
 
 # ── Player ship (5 wide x 3 tall) ───────────────────────────────────
 # Rich format: list of (char_string, color_list) per row
@@ -89,6 +94,31 @@ BOMBER_CHICKEN = [
 KAMIKAZE_CHICKEN = [
     "v(x)v",
     "  V  ",
+]
+
+# ── Rich chicken sprites (block-char pixel art) ─────────────────────
+# Regular: round bird with red comb, orange body, yellow feet
+CHICKEN_RICH = [
+    (f" {_L}{_F}{_L} ", [_, OR, RD, OR, _]),
+    (f" {_U} {_U} ",    [_, YL, _, YL, _]),
+]
+
+# Armored: metallic plating, full-width, heavy
+ARMORED_CHICKEN_RICH = [
+    (f"{_R}{_F}{_F}{_F}{_K}", [DG, LG, WH, LG, DG]),
+    (f" {_U}{_F}{_U} ",       [_, LG, DG, LG, _]),
+]
+
+# Bomber: angry red body, orange pointed wings
+BOMBER_CHICKEN_RICH = [
+    (f"{_L}{_R}{_F}{_K}{_L}", [OG, RD, RD, RD, OG]),
+    (f" {_U}{_L}{_U} ",       [_, OG, RD, OG, _]),
+]
+
+# Kamikaze: diving V-shape, magenta/hot-pink
+KAMIKAZE_CHICKEN_RICH = [
+    (f"{_U}{_L}{_F}{_L}{_U}", [MG, MG, BM, MG, MG]),
+    (f"  {_U}  ",              [_, _, MG, _, _]),
 ]
 
 # Egg projectile (going down)
