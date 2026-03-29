@@ -5,11 +5,11 @@ from asciimatics.screen import Screen
 from . import config, sprites
 
 # Two-tier input window (frames @ 20fps):
-# INITIAL: after a NEW direction press, generous window to cover terminal
-#          key-repeat initial delay (~250-500ms).  12 frames = 600ms.
-# REPEAT:  after a SAME-direction repeat, short window so releasing the
-#          key stops the ship quickly.  3 frames = 150ms.
-INPUT_WINDOW_INITIAL = 12
+# INITIAL: after a NEW direction press, covers terminal key-repeat
+#          initial delay (~250-500ms).  8 frames = 400ms.
+# REPEAT:  after a SAME-direction repeat, short window so releasing
+#          the key stops the ship quickly.  3 frames = 150ms.
+INPUT_WINDOW_INITIAL = 8
 INPUT_WINDOW_REPEAT = 3
 
 
@@ -54,7 +54,7 @@ class Player:
     def keep_moving(self):
         """Refresh input timer so non-direction keys (SPACE) don't kill momentum."""
         if self.target_vx != 0:
-            self.input_timer = max(self.input_timer, INPUT_WINDOW_INITIAL)
+            self.input_timer = max(self.input_timer, INPUT_WINDOW_REPEAT)
 
     def try_shoot(self):
         """Returns list of new bullet positions if cooldown allows, else empty."""
