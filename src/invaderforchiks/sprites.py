@@ -3,8 +3,8 @@
 # Player ship (5 wide x 3 tall)
 PLAYER_SHIP = [
     "  ^  ",
-    " /A\\ ",
-    "/___\\",
+    " /#\\ ",
+    "<===>",
 ]
 PLAYER_WIDTH = 5
 PLAYER_HEIGHT = 3
@@ -13,39 +13,39 @@ PLAYER_HEIGHT = 3
 PLAYER_HIT = [
     "  *  ",
     " *X* ",
-    "*****",
+    "*===*",
 ]
 
 # Player ship with shield active (cyan bubble)
 PLAYER_SHIELD = [
     " (^) ",
-    "(/ \\)",
-    "(___)",
+    "(/#\\)",
+    "(===)",
 ]
 
-# Regular chicken (5 wide x 2 tall)
+# Regular chicken (5 wide x 2 tall) -- wings spread, beak up
 CHICKEN = [
-    " \\o/ ",
-    " /_\\ ",
+    "\\(^)/",
+    " /~\\ ",
 ]
 CHICKEN_WIDTH = 5
 CHICKEN_HEIGHT = 2
 
-# Armored chicken (5 wide x 2 tall) -- takes 2 hits
+# Armored chicken (5 wide x 2 tall) -- takes 2 hits, heavy plating
 ARMORED_CHICKEN = [
-    " {o} ",
+    "={O}=",
     " [#] ",
 ]
 
-# Bomber chicken (5 wide x 2 tall) -- shoots more often
+# Bomber chicken (5 wide x 2 tall) -- shoots more often, aggressive
 BOMBER_CHICKEN = [
-    " >o< ",
-    " /V\\ ",
+    ">(o)<",
+    " /*\\ ",
 ]
 
-# Kamikaze chicken (5 wide x 2 tall) -- dives at player
+# Kamikaze chicken (5 wide x 2 tall) -- dives at player, wings down
 KAMIKAZE_CHICKEN = [
-    " \\o/ ",
+    "v(x)v",
     "  V  ",
 ]
 
@@ -72,13 +72,13 @@ POWERUP_MISSILE = "< BOOM >"
 # Explosion frames (5 wide x 3 tall) -- animate through these
 EXPLOSION_FRAMES = [
     [
-        " .#. ",
-        " ### ",
-        " '#' ",
+        " \\|/ ",
+        "--*--",
+        " /|\\ ",
     ],
     [
         " *+* ",
-        " +X+ ",
+        "+ . +",
         " *+* ",
     ],
     [
