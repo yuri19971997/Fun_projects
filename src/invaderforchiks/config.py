@@ -41,6 +41,43 @@ POWERUP_TYPES = ["weapon_up", "extra_life", "shield", "missile"]
 WEAPON_NAMES = ["Pea Shooter", "Dual Shot", "Spread Shot", "Rapid Fire", "Laser Beam", "Homing Eggs"]
 WEAPON_MAX_LEVEL = len(WEAPON_NAMES) - 1
 
+# Color mapping for terminals with < 256 colors (e.g. Windows console)
+def _map_colour_to_basic(c):
+    """Map a 256-color palette index to base 8-color (0-7).
+
+    Used automatically when the terminal doesn't support 256 colors.
+    """
+    if 0 <= c <= 7:
+        return c
+    if 8 <= c <= 15:
+        return c - 8
+    if c >= 232:
+        # Grayscale ramp -> white (visible on dark backgrounds)
+        return 7
+    # 6x6x6 color cube (indices 16-231)
+    idx = c - 16
+    b = idx % 6
+    g = (idx // 6) % 6
+    r = idx // 36
+    threshold = 3
+    is_r, is_g, is_b = r >= threshold, g >= threshold, b >= threshold
+    if is_r and is_g and is_b:
+        return 7  # white
+    if is_r and is_g:
+        return 3  # yellow
+    if is_r and is_b:
+        return 5  # magenta
+    if is_g and is_b:
+        return 6  # cyan
+    if is_r:
+        return 1  # red
+    if is_g:
+        return 2  # green
+    if is_b:
+        return 4  # blue
+    return 7  # default: white (visible on black)
+
+
 # Colors (256-palette indices for richer colors)
 COLOR_PLAYER = 46       # bright green
 COLOR_BULLET = 226      # bright yellow

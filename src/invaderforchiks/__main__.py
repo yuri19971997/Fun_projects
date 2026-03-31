@@ -11,8 +11,24 @@ from .game import GameScene
 from .title import TitleScreen
 
 
+def _patch_colours(screen):
+    """Wrap screen.print_at to clamp 256-color values to 0-7 on limited terminals."""
+    if screen.colours >= 256:
+        return
+    _orig = screen.print_at
+    _map = config._map_colour_to_basic
+
+    def _safe_print_at(text, x, y, colour=7, attr=0, bg=0, transparent=False):
+        return _orig(text, x, y, colour=_map(colour), attr=attr,
+                     bg=_map(bg), transparent=transparent)
+
+    screen.print_at = _safe_print_at
+
+
 def game_loop(screen, start_wave=1):
     """Run title screen then game, handling transitions via NextScene."""
+    _patch_colours(screen)
+
     # Check minimum terminal size
     if screen.width < config.MIN_WIDTH or screen.height < config.MIN_HEIGHT:
         screen.clear()

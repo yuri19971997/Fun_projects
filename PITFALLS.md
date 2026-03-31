@@ -42,6 +42,12 @@ Saves hours for the next agent.
 - Fix: Added `Player.keep_moving()` which refreshes `input_timer` to INPUT_WINDOW_INITIAL. Called from the SPACE handler in process_event so shooting preserves current momentum.
 - Commit: (this session)
 
+### Windows KeyError: 255 -- 256-color palette unsupported
+- Symptom: `KeyError: 255` in `screen._change_colours()` on Windows
+- Cause: Game uses 256-color palette indices (e.g. 255, 240, 196) but Windows console only supports 8 base colors (0-7). asciimatics `_COLOURS` dict only has keys 0-7 on Windows.
+- Fix: Monkey-patch `screen.print_at` in `__main__.py` to auto-clamp color values to 0-7 via `config._map_colour_to_basic()` when `screen.colours < 256`. Maps 256-color cube to closest base color, grayscale to white.
+- Commit: (this session)
+
 ### CRITICAL: asciimatics default handler steals SPACE and Q keys
 - Symptom: Arrow keys, A/D, and SPACE do nothing in-game. SPACE sends player back to title menu.
 - Cause: screen.play() calls get_event() and passes events to scene.process_event() THEN to _unhandled_event_default(). Our effects didn't implement process_event(), so ALL keys were "unhandled". The default handler maps SPACE->NextScene (back to title!) and Q->StopApplication.

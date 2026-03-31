@@ -2,7 +2,7 @@
 
 > **New here?** Read in order: this file, then `PITFALLS.md`, then `AGENTS.md`. For reasoning: `WHY.md`.
 
-Last updated: 2026-03-29. If anything here contradicts reality, fix this file.
+Last updated: 2026-04-01. If anything here contradicts reality, fix this file.
 
 ---
 
@@ -132,7 +132,8 @@ uv build                             # Build distributable package
 - No high score persistence (scores lost on quit)
 - No sound (terminal limitation)
 - No endless mode yet (only 20-wave story mode)
-- Terminal must support 256 colors and Unicode block chars; minimum 80x24
+- Terminal must support 256 colors and Unicode block chars for best visuals; minimum 80x24
+- **Windows compatible**: auto-downgrades to 8-color palette on Windows console (see `_patch_colours` in `__main__.py`)
 
 ## Future work (priority order)
 
