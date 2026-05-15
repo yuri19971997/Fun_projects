@@ -1,8 +1,10 @@
-# Invader for Chiks
+# Invader for Chicks
 
-A terminal shoot-em-up where you defend Earth from waves of invading space chickens.
+The galaxy is being seasoned, and Earth is on the menu.
+You are the only thing standing between humanity and a tide of intergalactic poultry.
 
-**Full comedy. Full ASCII art. Full fun.**
+
+**Terminal shoot-em-up**
 
 ## Install & Play
 
